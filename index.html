@@ -1,1 +1,17 @@
-<h1>Deneme 1 Projesi Çalışıyor</h1>
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Supabase Test</h1>
+
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+      const supabaseUrl = "BURAYA_PROJECT_URL";
+      const supabaseKey = "BURAYA_ANON_KEY";
+
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      console.log("Supabase bağlandı");
+    </script>
+  </body>
+</html>
