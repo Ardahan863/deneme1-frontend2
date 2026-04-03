@@ -21,24 +21,46 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ienJtYW1rb3JmdWpjbWttcnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjEwNzksImV4cCI6MjA5MDczNzA3OX0.NCJnpBdMylHfo3fLx-fW-IHM1qw8Pz_wXLYjSe79W5o"
       );
 
-      // SAYFA YÜKLENİNCE KONTROL
-      const { data } = await supabase.auth.getSession();
+      // SESSION CHECK
+      const checkSession = async () => {
+        const { data, error } = await supabase.auth.getSession();
 
-      if (data.session) {
-        document.getElementById("welcome").innerText =
-          "Hoşgeldin: " + data.session.user.email;
+        if (data.session) {
+          document.getElementById("welcome").innerText =
+            "Hoşgeldin: " + data.session.user.email;
 
-        document.getElementById("auth").style.display = "none";
-      }
+          document.getElementById("auth").style.display = "none";
+        }
+      };
 
+      checkSession();
+
+      // REGISTER
       window.register = async () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        await supabase.auth.signUp({ email, password });
-        alert("Mail gönderildi");
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password
+        });
+
+        console.log("REGISTER DATA:", data);
+        console.log("REGISTER ERROR:", error);
+
+        if (error) {
+          alert("HATA: " + error.message);
+          return;
+        }
+
+        if (data.user) {
+          alert("Kayıt başarılı! Mail kontrol et.");
+        } else {
+          alert("Kullanıcı oluşmadı.");
+        }
       };
 
+      // LOGIN
       window.login = async () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
@@ -48,8 +70,18 @@
           password
         });
 
+        console.log("LOGIN DATA:", data);
+        console.log("LOGIN ERROR:", error);
+
+        if (error) {
+          alert("HATA: " + error.message);
+          return;
+        }
+
         if (data.session) {
-          location.reload();
+          document.getElementById("auth").style.display = "none";
+          document.getElementById("welcome").innerText =
+            "Hoşgeldin: " + data.user.email;
         } else {
           alert("Giriş başarısız");
         }
