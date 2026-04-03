@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <h1>Giriş Sistemi Test</h1>
+    <h1>Giriş Sistemi</h1>
 
-    <input id="email" placeholder="email" />
-    <input id="password" placeholder="şifre" type="password" />
+    <div id="auth">
+      <input id="email" placeholder="email" />
+      <input id="password" type="password" placeholder="şifre" />
 
-    <button onclick="register()">Kayıt Ol</button>
-    <button onclick="login()">Giriş Yap</button>
+      <button onclick="register()">Kayıt Ol</button>
+      <button onclick="login()">Giriş Yap</button>
+    </div>
+
+    <h2 id="welcome"></h2>
 
     <script type="module">
       import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
       const supabase = createClient(
-        "https://nbzrmamkorfujcmkmryb.supabase.co",
+        "https://nbzrmamkorfujcmkmryb.supabase.com",
         "sb_publishable_KqNbmAxa4hSG2nu4OmckKg_zQH_kFA-"
       );
+
+      // SAYFA YÜKLENİNCE KONTROL
+      const { data } = await supabase.auth.getSession();
+
+      if (data.session) {
+        document.getElementById("welcome").innerText =
+          "Hoşgeldin: " + data.session.user.email;
+
+        document.getElementById("auth").style.display = "none";
+      }
 
       window.register = async () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password
-        });
-
-        console.log(data, error);
-        alert("Kayıt denendi");
+        await supabase.auth.signUp({ email, password });
+        alert("Mail gönderildi");
       };
 
       window.login = async () => {
@@ -39,8 +48,11 @@
           password
         });
 
-        console.log(data, error);
-        alert("Giriş denendi");
+        if (data.session) {
+          location.reload();
+        } else {
+          alert("Giriş başarısız");
+        }
       };
     </script>
   </body>
